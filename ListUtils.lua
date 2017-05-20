@@ -3,7 +3,9 @@ function CoreLoot.ListUtils:AddNewListItem(listKeyString, listStateKeyString, it
 	if CoreLoot.db[listKeyString][itemIDString] == nil then
 		CoreLoot.db[listKeyString][itemIDString] = itemName
 		CoreLoot.db[listStateKeyString][itemIDString] = true
-	end
+	else
+        CoreLoot:Print(" [Debug] AddNewListItem > list key or item ID string nil: " .. listKeyString .. " id: " .. itemIDString)
+    end
 end
 
 function CoreLoot.ListUtils:RemoveListItem(listKeyString, listStateKeyString, itemID)
@@ -11,16 +13,28 @@ function CoreLoot.ListUtils:RemoveListItem(listKeyString, listStateKeyString, it
 	if CoreLoot.db[listKeyString][itemIDString] ~= nil then
 		CoreLoot.db[listKeyString][itemIDString] = nil
 		CoreLoot.db[listStateKeyString][itemIDString] = nil
-	end
+    else
+        CoreLoot:Print(" [Debug] RemoveListItem > list key or item ID string nil: " .. listKeyString .. " id: " .. itemIDString)
+    end
+end
+
+function CoreLoot.ListUtils:HandleListAction(itemLink, itemName, listKeyString, listStateKeyString, itemID, removeItem)
+    if removeItem then
+        CoreLoot.ListUtils:RemoveListItem(listKeyString, listStateKeyString, itemID)
+        CoreLoot:Print("Item " .. itemLink .. " removed from " .. listKeyString)
+    else
+        CoreLoot.ListUtils:AddNewListItem(listKeyString, listStateKeyString, itemID, itemName)
+        CoreLoot:Print("Item " .. itemLink .. " added to " .. listKeyString)
+    end
 end
 
 function CoreLoot.ListUtils:HandlePickupItem(bag, slot)
 	if slot == nil then return nil end
 	if CoreLoot.MFrame == nil then return nil end
 	if not CoreLoot.MFrame:IsVisible() then return nil end
-	
+
 	_type, itemID, subtype, subdata = GetCursorInfo()
-	
+
 	if _type ~= "item" then return nil end
 
 	name, link, quality, iLevel, reqLevel, class, subclass, _, vendorPrice = GetItemInfo(itemID)
@@ -28,55 +42,24 @@ function CoreLoot.ListUtils:HandlePickupItem(bag, slot)
 	local listStr = ""
 	local listStateStr = ""
 	local itemIdStr = tostring(itemID)
-	if CoreLoot.ListUtils.AddWhitelist then
-		-- Nothing to add check
-		if not CoreLoot.ListUtils.Invert and CoreLoot.db.WhitelistState[itemIdStr] ~= nil then
-			return nil
-		-- Nothing to remove check
-		elseif CoreLoot.ListUtils.Invert and CoreLoot.db.WhitelistState[itemIdStr] == nil then 
-			return nil
-		end
 
-		listStr = "Whitelist"
-		listStateStr = "WhitelistState"
+    local remove = CoreLoot.ListUtils.Invert
+	if CoreLoot.ListUtils.AddWhitelist then
+        if (remove and CoreLoot.db.WhitelistState[itemIdStr] ~= nil) or (not remove and CoreLoot.db.WhitelistState[itemIdStr] == nil) then
+            CoreLoot.ListUtils:HandleListAction(link, name, "Whitelist", "WhitelistState", itemID, remove)
+        end
 	end
 
 	if CoreLoot.ListUtils.AddBlacklist then
-		-- Nothing to add check
-		if not CoreLoot.ListUtils.Invert and CoreLoot.db.BlacklistState[itemIdStr] ~= nil then
-			return nil
-		-- Nothing to remove check
-		elseif CoreLoot.ListUtils.Invert and CoreLoot.db.BlacklistState[itemIdStr] == nil then 
-			return nil
-		end
-
-		listStr = "Blacklist"
-		listStateStr = "BlacklistState"
+        if (remove and CoreLoot.db.BlacklistState[itemIdStr] ~= nil) or (not remove and CoreLoot.db.BlacklistState[itemIdStr] == nil) then
+            CoreLoot.ListUtils:HandleListAction(link, name, "Blacklist", "BlacklistState", itemID, remove)
+        end
 	end
 
 	if CoreLoot.ListUtils.AddAutosell then
-		-- Nothing to add check
-		if not CoreLoot.ListUtils.Invert and CoreLoot.db.AutosellState[itemIdStr] ~= nil then
-			return nil
-		-- Nothing to remove check
-		elseif CoreLoot.ListUtils.Invert and CoreLoot.db.AutosellState[itemIdStr] == nil then 
-			return nil
-		end
-
-		listStr = "Autosell"
-		listStateStr = "AutosellState"
-	end
-
-	--if listStr == "" or listStateStr == "" then
-	--	return nil
-	--end
-
-	if CoreLoot.ListUtils.Invert then 
-		CoreLoot.ListUtils:RemoveListItem(listStr, listStateStr, itemID, name)
-		CoreLoot:Print("Item " .. link .. " removed from " .. listStr)
-	else
-		CoreLoot.ListUtils:AddNewListItem(listStr, listStateStr, itemID, name)
-		CoreLoot:Print("Item " .. link .. " added to " .. listStr)
+        if (remove and CoreLoot.db.AutosellState[itemIdStr] ~= nil) or (not remove and CoreLoot.db.AutosellState[itemIdStr] == nil) then
+            CoreLoot.ListUtils:HandleListAction(link, name, "Autosell", "AutosellState", itemID, remove)
+        end
 	end
 
 	CoreLoot.GuiUtils:PopulateDropdownListWidget(CoreLoot.ListWidgets.Whitelist, CoreLoot.db.Whitelist, CoreLoot.db.WhitelistState)

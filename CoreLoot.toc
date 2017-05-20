@@ -1,0 +1,18 @@
+## Interface: 60000
+## Title: CoreLoot
+## Version: 1.0
+## Author: Thomas
+## SavedVariables: CoreLootProfiles
+## SavedVariablesPerCharacter: CoreLootSelectedProfile
+
+embeds.xml
+PreSetupVars.lua
+GuiUtils.lua
+ListUtils.lua
+
+GUI_ProfileWidget.lua
+GUI_MainFrameSetup.lua
+
+InventoryUtils.lua
+
+FinalInit.lua

@@ -5,7 +5,14 @@ function CoreLoot:RenderMainFrame()
 	CoreLoot.scroller = CoreLoot.GUI:Create("ScrollFrame")
 
 	-- Configure main frame
-	CoreLoot.MFrame:SetCallback("OnClose", function(w) CoreLoot.GUI:Release(w) end)
+	CoreLoot.MFrame:SetCallback("OnClose", function(w)
+        CoreLoot.ListUtils.Whitelist = false
+        CoreLoot.ListUtils.Blacklist = false
+        CoreLoot.ListUtils.Autosell = false
+        CoreLoot.ListUtils.Invert = false
+        CoreLoot.GUI:Release(w)
+    end)
+
 	CoreLoot.MFrame:SetTitle("CoreLoot")
 	CoreLoot.MFrame:SetStatusText("Doing stuff.")
 	CoreLoot.MFrame:SetHeight(600)

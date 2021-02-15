@@ -14,9 +14,12 @@ jobs:
     steps:
       # ...
       - name: "Build & test"
-        run: |
-          git pull
-          zip -r CoreLoot-PreRelease.zip * -x CoreLoot/.git/**\* CoreLoot/.git*
+      - uses: actions/checkout@master
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+         filename: 'CoreLoot-PreRelease.zip'
+         exclusions: '*.git*'
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:

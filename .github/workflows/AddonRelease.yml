@@ -15,6 +15,7 @@ jobs:
       # ...
       - name: "Build & test"
         run: |
+          ls
           zip -r CoreLoot.zip CoreLoot/ -x CoreLoot/.git/**\* CoreLoot/.git*
 
       - uses: "marvinpinto/action-automatic-releases@latest"

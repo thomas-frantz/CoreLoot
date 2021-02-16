@@ -1,6 +1,6 @@
-## Interface: 60000
+## Interface: 90002
 ## Title: CoreLoot
-## Version: 1.0
+## Version: 1.0.1
 ## Author: Thomas
 ## SavedVariables: CoreLootProfiles
 ## SavedVariablesPerCharacter: CoreLootSelectedProfile

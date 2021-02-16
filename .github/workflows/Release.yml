@@ -4,7 +4,7 @@ name: Release AddOn # description of this workflow, can be anything you want
 on:
   push:
     tags:
-      - '**'
+      - 'v*'
 
 env:
   # CF_API_KEY: ${{ secrets.CF_API_KEY }}
